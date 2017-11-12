@@ -1,6 +1,10 @@
 # Copyright 2015 Adafruit Industries.
 # Author: Tony DiCola
 # License: GNU GPLv2, see LICENSE.txt
+# 2017/11/12 Small modification to also inlude 1
+# subdirectory layer in search path for USB drives
+# Author: Paul Stewart
+
 import glob
 
 from usb_drive_mounter import USBDriveMounter
@@ -25,10 +29,14 @@ class USBDriveReader(object):
 
     def search_paths(self):
         """Return a list of paths to search for files. Will return a list of all
-        mounted USB drives.
+        mounted USB drives and one layer of subdirecotries.
         """
         self._mounter.mount_all()
-        return glob.glob(self._mount_path + '*')
+        vid_dirs = glob.glob(self._mount_path + '*')
+        vid_dirs.extend(glob.glob(self._mount_path + '*/*'))
+        # print vid_dirs
+        return vid_dirs
+
 
     def is_changed(self):
         """Return true if the file search paths have changed, like when a new
