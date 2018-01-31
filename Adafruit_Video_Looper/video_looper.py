@@ -202,9 +202,38 @@ class VideoLooper(object):
         else:
             self._idle_message()
 
+    def _draw_menu(self):
+
+            menu_items, selection = self._reader.menu
+            labels = []
+            lh_sum = 0
+            for i, item in enumerate(menu_items):
+                if i == selection:
+                    self._small_font.set_bold(True)
+                label = self._render_text(item)
+                if i == selection:
+                    self._small_font.set_bold(False)
+                lw, lh = label.get_size()
+                lh_sum += lh
+                labels.append(label)
+            sw, sh = self._screen.get_size()
+            self._screen.fill(self._bgcolor)
+            for label in labels:
+                pos = sh/2 - lh_sum/2
+                self._screen.blit(label, (sw/2-lw/2, pos))
+                pos += label.get_size()[1]
+            pygame.display.update()
+
     def run(self):
         """Main program loop.  Will never return!"""
         # Get playlist of movies to play from file reader.
+        is_interactive = self._config.get('video_looper', 'file_reader') == 'interactive'
+
+        if is_interactive:
+            while not self._reader.selection_confirmed():
+                self._draw_menu()
+                time.sleep(0.002)
+
         playlist = self._build_playlist()
         self._prepare_to_run_playlist(playlist)
         # Main loop to play videos in the playlist and listen for file changes.
@@ -222,6 +251,10 @@ class VideoLooper(object):
                 self._player.stop(3)  # Up to 3 second delay waiting for old 
                                       # player to stop.
                 # Rebuild playlist and show countdown again (if OSD enabled).
+                if is_interactive:
+                    while not self._reader.selection_confirmed():
+                        self._draw_menu()
+                        time.sleep(0.002)
                 playlist = self._build_playlist()
                 self._prepare_to_run_playlist(playlist)
             # Give the CPU some time to do other tasks.
