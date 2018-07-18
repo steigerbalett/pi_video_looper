@@ -12,7 +12,7 @@ fi
 echo "Installing dependencies..."
 echo "=========================="
 apt-get update
-apt-get -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer exfat-fuse exfat-utils
+apt-get -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer exfat-fuse exfat-utils ntfs-3g
 
 echo "Installing hello_video..."
 echo "========================="
