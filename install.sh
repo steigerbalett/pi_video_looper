@@ -35,4 +35,14 @@ echo "==========================================="
 cp video_looper.conf /etc/supervisor/conf.d/
 service supervisor restart
 
+if grep gpu_mem /boot/config.txt; then
+  echo "Not changing GPU memory since it's already set"
+else
+  echo "Increasing GPU memory..."
+  echo "========================"
+  echo "" >> /boot/config.txt
+  echo "# Increase GPU memory to avoid video playback problems" >> /boot/config.txt
+  echo "gpu_mem=128" >> /boot/config.txt
+fi
+
 echo "Finished!"
