@@ -14,16 +14,6 @@ echo "=========================="
 apt-get update
 apt-get -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer exfat-fuse exfat-utils ntfs-3g
 
-echo "Installing hello_video..."
-echo "========================="
-git clone https://github.com/adafruit/pi_hello_video.git
-cd pi_hello_video
-./rebuild.sh
-cd hello_video
-make install
-cd ../..
-rm -rf pi_hello_video
-
 echo "Installing video_looper program..."
 echo "=================================="
 mkdir -p /mnt/usbdrive0 # This is very important if you put your system in readonly after
