@@ -77,6 +77,7 @@ class VideoLooper(object):
         # Set other static internal state.
         self._extensions = self._player.supported_extensions()
         self._small_font = pygame.font.Font(None, 50)
+        self._medium_font = pygame.font.Font(None, 75)
         self._big_font   = pygame.font.Font(None, 250)
         self._running    = True
 
@@ -148,7 +149,7 @@ class VideoLooper(object):
             font = self._small_font
         return font.render(message, True, self._fgcolor, self._bgcolor)
 
-    def _animate_countdown(self, playlist, seconds=10):
+    def _animate_countdown(self, playlist, seconds=3):
         """Print text with the number of loaded movies and a quick countdown
         message if the on screen display is enabled.
         """
@@ -208,9 +209,38 @@ class VideoLooper(object):
         else:
             self._idle_message()
 
+    def _draw_menu(self):
+        menu_items, selection = self._reader.menu()
+        labels = []
+        lh_sum = 0
+        for i, item in enumerate(menu_items):
+            if i == selection:
+                font = self._medium_font
+            else:
+                font = self._small_font
+            label = self._render_text(item, font=font)
+            lw, lh = label.get_size()
+            lh_sum += lh
+            labels.append(label)
+        sw, sh = self._screen.get_size()
+        self._screen.fill(self._bgcolor)
+        pos = sh/2 - lh_sum/2
+        for label in labels:
+            self._screen.blit(label, (sw/2-lw/2, pos))
+            pos += label.get_size()[1]
+        pygame.display.update()
+
     def run(self):
         """Main program loop.  Will never return!"""
         # Get playlist of movies to play from file reader.
+        is_interactive = self._config.get('video_looper', 'file_reader') == 'interactive'
+
+        if is_interactive:
+            while not self._reader.selection_confirmed():
+                self._draw_menu()
+                self._reader.handle_keypress()
+                time.sleep(0.002)
+
         playlist = self._build_playlist()
         self._prepare_to_run_playlist(playlist)
         # Main loop to play videos in the playlist and listen for file changes.
@@ -228,6 +258,11 @@ class VideoLooper(object):
                 self._player.stop(3)  # Up to 3 second delay waiting for old 
                                       # player to stop.
                 # Rebuild playlist and show countdown again (if OSD enabled).
+                if is_interactive:
+                    while not self._reader.selection_confirmed():
+                        self._draw_menu()
+                        self._reader.handle_keypress()
+                        time.sleep(0.002)
                 playlist = self._build_playlist()
                 self._prepare_to_run_playlist(playlist)
             # Event handling for key press, if keyboard control is enabled
@@ -238,6 +273,8 @@ class VideoLooper(object):
                         if event.key == pygame.K_ESCAPE:
                             self.quit()
             # Give the CPU some time to do other tasks.
+            else:
+                self._reader.handle_keypress()
             time.sleep(0.002)
 
     def quit(self):
