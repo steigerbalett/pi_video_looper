@@ -35,4 +35,10 @@ else
   echo "gpu_mem=128" >> /boot/config.txt
 fi
 
+echo "Disable undervoltage bolt"
+echo "========================"
+echo "" >> /boot/config.txt
+echo "# Disable under-voltage warning" >> /boot/config.txt
+echo "avoid_warnings=1" >> /boot/config.txt
+
 echo "Finished!"
