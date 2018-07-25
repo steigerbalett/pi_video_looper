@@ -41,4 +41,11 @@ echo "" >> /boot/config.txt
 echo "# Disable under-voltage warning" >> /boot/config.txt
 echo "avoid_warnings=1" >> /boot/config.txt
 
+echo "Disable overscan"
+echo "========================"
+echo "" >> /boot/config.txt
+echo "# Disable overscan" >> /boot/config.txt
+echo "disable_overscan=1" >> /boot/config.txt
+
+
 echo "Finished!"
