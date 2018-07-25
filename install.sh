@@ -12,17 +12,7 @@ fi
 echo "Installing dependencies..."
 echo "=========================="
 apt-get update
-apt-get -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer
-
-echo "Installing hello_video..."
-echo "========================="
-git clone https://github.com/adafruit/pi_hello_video.git
-cd pi_hello_video
-./rebuild.sh
-cd hello_video
-make install
-cd ../..
-rm -rf pi_hello_video
+apt-get -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer exfat-fuse exfat-utils ntfs-3g
 
 echo "Installing video_looper program..."
 echo "=================================="
@@ -34,5 +24,28 @@ echo "Configuring video_looper to run on start..."
 echo "==========================================="
 cp video_looper.conf /etc/supervisor/conf.d/
 service supervisor restart
+
+if grep gpu_mem /boot/config.txt; then
+  echo "Not changing GPU memory since it's already set"
+else
+  echo "Increasing GPU memory..."
+  echo "========================"
+  echo "" >> /boot/config.txt
+  echo "# Increase GPU memory to avoid video playback problems" >> /boot/config.txt
+  echo "gpu_mem=128" >> /boot/config.txt
+fi
+
+echo "Disable undervoltage bolt"
+echo "========================"
+echo "" >> /boot/config.txt
+echo "# Disable under-voltage warning" >> /boot/config.txt
+echo "avoid_warnings=1" >> /boot/config.txt
+
+echo "Disable overscan"
+echo "========================"
+echo "" >> /boot/config.txt
+echo "# Disable overscan" >> /boot/config.txt
+echo "disable_overscan=1" >> /boot/config.txt
+
 
 echo "Finished!"
