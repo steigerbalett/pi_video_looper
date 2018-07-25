@@ -47,5 +47,11 @@ echo "" >> /boot/config.txt
 echo "# Disable overscan" >> /boot/config.txt
 echo "disable_overscan=1" >> /boot/config.txt
 
+echo "Force FullHD 1920x1080"
+echo "========================"
+echo "" >> /boot/config.txt
+echo "# Force FullHD 1920x1080" >> /boot/config.txt
+echo "hdmi_group=1" >> /boot/config.txt
+echo "hdmi_mode=16" >> /boot/config.txt
 
 echo "Finished!"
