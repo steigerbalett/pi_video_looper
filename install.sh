@@ -11,8 +11,9 @@ fi
 
 echo "Installing dependencies..."
 echo "=========================="
-apt-get update
-apt-get -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer exfat-fuse exfat-utils ntfs-3g
+apt update
+apt -y full-upgrade
+apt -y install build-essential python-dev python-pip python-pygame supervisor git omxplayer exfat-fuse exfat-utils ntfs-3g hfsutils hfsprogs
 
 echo "Installing video_looper program..."
 echo "=================================="
