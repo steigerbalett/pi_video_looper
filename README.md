@@ -6,10 +6,16 @@ Just plugin your USB-Drive to the RaspberryPi and it will scan it for movies. Af
  
 Changes:
 Show IP-Adress on startup (PIMIYA)
+
 Added ExFat support (PIMIYA)
+
 Added search for files in root + 1 subdirectory (pauldast)
+
 Added NTFS support (gazzer82)
-Added passibility to change the countdowntime in the configfile (JAVL)
+
+Added possibility to change the countdowntime in the configfile (JAVL)
+
 Removed the undervoltagebolt
+
 
 This is a Project to learn github.
