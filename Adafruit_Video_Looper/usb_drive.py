@@ -64,7 +64,7 @@ class USBDriveReader(object):
         if get_ip_address('eth0') is None:
             return 'Insert USB Drive with compatible movies.'
         else:
-            return 'Insert USB drive with compatible movies. (' + (get_ip_address('eth0')) + ')'
+            return 'Insert USB drive with compatible movies. (IP: ' + (get_ip_address('eth0')) + ')'
 
 
 def create_file_reader(config):
