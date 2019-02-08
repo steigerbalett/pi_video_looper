@@ -61,7 +61,7 @@ fi
 if grep disable_splash=1 /boot/config.txt; then
   echo "Splashscreen-Tweak already set"
 else
-echo "Disable overscan"
+echo "Disable Splashscreen"
 echo "========================"
 echo "" >> /boot/config.txt
 echo "# Disable Splashscreen" >> /boot/config.txt
