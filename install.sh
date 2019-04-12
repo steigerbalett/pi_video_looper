@@ -75,4 +75,14 @@ echo "# Force FullHD 1920x1080" >> /boot/config.txt
 echo "hdmi_group=1" >> /boot/config.txt
 echo "hdmi_mode=16" >> /boot/config.txt
 
+if grep hdmi_force_hotplug=1 /boot/config.txt; then
+  echo "HDMI-Hotplug already set"
+else
+echo "Enable HDMI Hotplug"
+echo "========================"
+echo "" >> /boot/config.txt
+echo "# Enable HDMI Hotplug" >> /boot/config.txt
+echo "hdmi_force_hotplug=1" >> /boot/config.txt
+fi
+
 echo "Finished!"
