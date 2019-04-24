@@ -6,13 +6,11 @@
 # Author: Paul Stewart
 
 import glob
-
 import socket
 import fcntl
 import struct
 
-
-from usb_drive_mounter import USBDriveMounter
+from .usb_drive_mounter import USBDriveMounter
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -25,7 +23,7 @@ def get_ip_address(ifname):
     except:
         return None
     
-class USBDriveReader(object):
+class USBDriveReader:
 
     def __init__(self, config):
         """Create an instance of a file reader that uses the USB drive mounter
