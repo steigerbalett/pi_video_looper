@@ -1,6 +1,7 @@
 # Copyright 2015 Adafruit Industries.
 # Author: Tony DiCola
 # License: GNU GPLv2, see LICENSE.txt
+
 import ConfigParser
 import importlib
 import os
@@ -11,7 +12,7 @@ import time
 
 import pygame
 
-from model import Playlist
+from .model import Playlist
 
 
 # Basic video looper architecure:
@@ -37,14 +38,14 @@ from model import Playlist
 # - Future file readers and video players can be provided and referenced in the
 #   config to extend the video player use to read from different file sources
 #   or use different video players.
-class VideoLooper(object):
+class VideoLooper:
 
     def __init__(self, config_path):
         """Create an instance of the main video looper application class. Must
         pass path to a valid video looper ini configuration file.
         """
         # Load the configuration.
-        self._config = ConfigParser.SafeConfigParser()
+        self._config = configparser.ConfigParser()
         if len(self._config.read(config_path)) == 0:
             raise RuntimeError('Failed to find configuration file at {0}, is the application properly installed?'.format(config_path))
         self._console_output = self._config.getboolean('video_looper', 'console_output')
@@ -57,13 +58,13 @@ class VideoLooper(object):
         self._keyboard_control = self._config.getboolean('video_looper', 'keyboard_control')
         # Parse string of 3 comma separated values like "255, 255, 255" into 
         # list of ints for colors.
-        self._bgcolor = map(int, self._config.get('video_looper', 'bgcolor') \
-                                             .translate(None, ',') \
-                                             .split())
-        self._fgcolor = map(int, self._config.get('video_looper', 'fgcolor') \
-                                             .translate(None, ',') \
-                                             .split())
-       	#Get seconds for countdown from config
+        self._bgcolor = list(map(int, self._config.get('video_looper', 'bgcolor')
+                                             .translate(str.maketrans('','', ','))
+                                             .split()))
+        self._fgcolor = list(map(int, self._config.get('video_looper', 'fgcolor')
+                                             .translate(str.maketrans('','', ','))
+                                             .split()))
+        #Get seconds for countdown from config
         self._countdown_time = self._config.getint('video_looper', 'countdown_time')
         # Load sound volume file name value
         self._sound_vol_file = self._config.get('omxplayer', 'sound_vol_file');
@@ -73,8 +74,9 @@ class VideoLooper(object):
         pygame.display.init()
         pygame.font.init()
         pygame.mouse.set_visible(False)
-        size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+        size = self._size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
         self._screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+        self._bgimage = self._load_bgimage()
         self._blank_screen()
         # Set other static internal state.
         self._extensions = self._player.supported_extensions()
@@ -99,6 +101,17 @@ class VideoLooper(object):
         module = self._config.get('video_looper', 'file_reader')
         return importlib.import_module('.' + module, 'Adafruit_Video_Looper') \
             .create_file_reader(self._config)
+
+    def _load_bgimage(self):
+        """Load the configured background image and return an instance of it."""
+        image = None
+        if self._config.has_option('video_looper', 'bgimage'):
+            imagepath = self._config.get('video_looper', 'bgimage')
+            if imagepath != "" and os.path.isfile(imagepath):
+                self._print('Using ' + str(imagepath) + ' as a background')
+                image = pygame.image.load(imagepath)
+                image = pygame.transform.scale(image, self._size)
+        return image
 
     def _is_number(iself, s):
         try:
@@ -140,6 +153,9 @@ class VideoLooper(object):
     def _blank_screen(self):
         """Render a blank screen filled with the background color."""
         self._screen.fill(self._bgcolor)
+        if self._bgimage is not None:
+            rect = self._bgimage.get_rect()
+            self._screen.blit(self._bgimage, rect)
         pygame.display.update()
 
     def _render_text(self, message, font=None):
